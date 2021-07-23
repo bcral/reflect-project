@@ -28,7 +28,7 @@ var Config = async function(accounts) {
     return {
         owner: owner,
         reflect: reflect,
-        testAddys: testAddresses,
+        testAddresses: testAddresses,
         // To make smaller transactions easier
         weiMultiple: (new BigNumber(10)).pow(18),
     }
