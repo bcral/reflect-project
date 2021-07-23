@@ -16,24 +16,9 @@ contract('REFLECT.sol', async (accounts) => {
   it(`1. Just to make sure this works...`, async function () {
 
     // Get operating status
-    let status = await config.reflect.isOperational.call();
-    assert.equal(status, true, "Incorrect initial operating status value");
+    let getName = await config.reflect.name.call({from: config.owner});
+    assert.equal(getName, "reflect.finance", "Fetches name of coin from contract");
 
   });
-
-  // it(`2. (multiparty) can block access to setOperatingStatus() for non-Contract Owner account`, async function () {
-
-  //     // Ensure that access is denied for non-Contract Owner account
-  //     let accessDenied = false;
-  //     try 
-  //     {
-  //         await config.flightSuretyData.setOperatingStatus(false, { from: config.testAddresses[2] });
-  //     }
-  //     catch(e) {
-  //         accessDenied = true;
-  //     }
-  //     assert.equal(accessDenied, true, "Access not restricted to Contract Owner");
-            
-  // });
   
 });
