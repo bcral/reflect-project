@@ -22,7 +22,7 @@ contract('REFLECT.sol', async (accounts) => {
 
     // Get token name
     let getName = await config.reflect.name.call({from: config.owner});
-    assert.equal(getName, "reflect.finance", "Fetches name of coin from contract");
+    assert.equal(getName, "SafeMoon", "Fetches name of coin from contract");
 
   });
 
@@ -30,8 +30,8 @@ contract('REFLECT.sol', async (accounts) => {
 
     // Get total token supply(in contract)
     getTotalSupply = await config.reflect.totalSupply.call({from: config.owner});
-    // Total supply should be 10 quadrillion, or 10,000,000,000,000,000
-    assert.equal(getTotalSupply, 10000000000000000, "Fetches the total coin supply");
+    // Total supply should be 1 quadrillion, or 1,000,000,000,000,000
+    assert.equal(getTotalSupply, 1000000000000000, "Fetches the total coin supply");
 
   });
 
@@ -39,24 +39,24 @@ contract('REFLECT.sol', async (accounts) => {
 
     // Get balance of owner address
     ownerSupply = await config.reflect.balanceOf.call(config.owner, {from: config.owner});
-    // Owner balance should be 10 quadrillion, or 10,000,000,000,000,000
-    assert.equal(ownerSupply, 10000000000000000, "Owner wallet owns 100% of all tokens");
+    // Owner balance should be 1 quadrillion, or 1,000,000,000,000,000
+    assert.equal(ownerSupply, 1000000000000000, "Owner wallet owns 100% of all tokens");
 
   });
 
   it(`4. Send 50% of tokens to testAddresses[1](Wallet B), and 10% of tokens to testAddresses[2](Wallet C)`, async function () {
 
     // Find 50% of owner's total balance
-    let sendHalfAmount = ownerSupply * 0.5;
-    let sendTenthAmount = getTotalSupply * 0.1;
-    // Send 50% of owner's tokens to testAddresses[1]
-    await config.reflect.transfer(config.testAddresses[1], sendHalfAmount, {from: config.owner});
-    // Send 10% of total tokens to testAddresses[1]
-    await config.reflect.transfer(config.testAddresses[2], sendTenthAmount, {from: config.testAddresses[1]});
-    // Check testAddresses[1] balance
+    let sixtyPercent = getTotalSupply * 0.6;
+    let twentyPercent = getTotalSupply * 0.2;
+    // Send 60% of owner's tokens to testAddresses[1]
+    await config.reflect.transfer(config.testAddresses[1], sixtyPercent, {from: config.owner});
+    // Send 20% of total tokens to testAddresses[1]
+    await config.reflect.transfer(config.testAddresses[2], twentyPercent, {from: config.testAddresses[1]});
+    
     let bSupply = await config.reflect.balanceOf.call(config.testAddresses[1], {from: config.owner});
-    // Wallet B's new balance should be 5 quadrillion, or 5,000,000,000,000,000
-    assert.equal(bSupply, 4950000000000000, "No reflections included");
+    console.log(bSupply.toString())
+    assert.equal(bSupply, 404040404040404, "B balance is 40% (+reflection)");
 
   });
 
@@ -66,17 +66,16 @@ contract('REFLECT.sol', async (accounts) => {
     let cSupply = await config.reflect.balanceOf.call(config.testAddresses[2], {from: config.owner});
     // Wallet C's new balance should be 1 quadrillion, or 1,000,000,000,000,000
     console.log(cSupply.toString())
-    assert.equal(cSupply, 990000000000000, "Actual result = 990990990990990");
-
+    assert.equal(cSupply, 191919191919191, "C balance is 20% (less 5%)");
   });
 
-  it(`5. Check that owner recieved reflection`, async function () {
+  it(`6. Check that owner recieved reflection`, async function () {
 
     // Get balance of owner address
     ownerSupply = await config.reflect.balanceOf.call(config.owner, {from: config.owner});
     // owner's new balance should be something around 5 quadrillion
     console.log(ownerSupply.toString())
-    assert.equal(ownerSupply, 5000000000000000, "Actual result = 5030155783924628");
+    assert.equal(ownerSupply, 404040404040404, "Owner balance is 40% (+reflection)");
 
   });
   

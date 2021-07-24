@@ -1,4 +1,4 @@
-const reflect = artifacts.require("REFLECT");
+const reflect = artifacts.require("Safemoon");
 
 module.exports = function(deployer) {
 

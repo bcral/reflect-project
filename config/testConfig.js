@@ -1,5 +1,5 @@
 
-var REFLECT = artifacts.require("REFLECT");
+var REFLECT = artifacts.require("Safemoon");
 var BigNumber = require('bignumber.js');
 
 var Config = async function(accounts) {
