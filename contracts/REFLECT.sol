@@ -699,8 +699,8 @@ contract SafeMoon is Context, IERC20, Ownable {
     address[] private _excluded;
    
     uint256 private constant MAX = ~uint256(0);
-    uint256 private _tTotal = 1000000000 * 10**6;
-    uint256 private constant maxVal = ~uint256(0);
+    uint256 private _tTotal = 1000000 * 10**9;
+    uint256 private constant maxVal = 1000000 * 10**9 * 10**9;
     uint256 private _rTotal = (maxVal - (maxVal % _tTotal));
     uint256 private _tFeeTotal;
 
@@ -759,7 +759,7 @@ contract SafeMoon is Context, IERC20, Ownable {
         uint256 _rAmount = _rTotal.div(_tTotal).mul(amount);
         _rOwned[recipient] = _rOwned[recipient].add(_rAmount);
         _tTotal = _tTotal.add(amount);
-        _rTotal = _rTotal.add(_rAmount); // This seems to cause addition overflow in SafeMath
+        _rTotal = _rTotal.add(_rAmount);
         emit Transfer(address(0), recipient, amount);
     }
     function name() public view returns (string memory) {
