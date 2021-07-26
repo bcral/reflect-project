@@ -759,7 +759,7 @@ contract SafeMoon is Context, IERC20, Ownable {
         uint256 _rAmount = _rTotal.div(_tTotal).mul(amount);
         _rOwned[recipient] = _rOwned[recipient].add(_rAmount);
         _tTotal = _tTotal.add(amount);
-        _rTotal = _rTotal.add(_rAmount);
+        _rTotal = _rTotal.add(_rAmount); // This seems to cause addition overflow in SafeMath
         emit Transfer(address(0), recipient, amount);
     }
     function name() public view returns (string memory) {

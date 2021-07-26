@@ -55,6 +55,7 @@ contract('REFLECT.sol', async (accounts) => {
     await config.reflect.transfer(config.testAddresses[2], twentyPercent, {from: config.testAddresses[1]});
     
     let bSupply = await config.reflect.balanceOf.call(config.testAddresses[1], {from: config.owner});
+    // Wallet B's new balance
     console.log(bSupply.toString())
     assert.equal(bSupply, 404040404040404, "B balance is 40% (+reflection)");
 
@@ -64,7 +65,7 @@ contract('REFLECT.sol', async (accounts) => {
 
     // Check testAddresses[2] balance    
     let cSupply = await config.reflect.balanceOf.call(config.testAddresses[2], {from: config.owner});
-    // Wallet C's new balance should be 1 quadrillion, or 1,000,000,000,000,000
+    // Wallet C's new balance
     console.log(cSupply.toString())
     assert.equal(cSupply, 191919191919191, "C balance is 20% (less 5%)");
   });
@@ -73,7 +74,7 @@ contract('REFLECT.sol', async (accounts) => {
 
     // Get balance of owner address
     ownerSupply = await config.reflect.balanceOf.call(config.owner, {from: config.owner});
-    // owner's new balance should be something around 5 quadrillion
+    // owner's new balance
     console.log(ownerSupply.toString())
     assert.equal(ownerSupply, 404040404040404, "Owner balance is 40% (+reflection)");
 

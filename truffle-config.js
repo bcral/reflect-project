@@ -43,14 +43,15 @@ module.exports = {
     // options below to some value.
     //
     development: {
-    //  host: "127.0.0.1",     // Localhost (default: none)
-    //  port: 8545,            // Standard Ethereum port (default: none)
-        // Just to throw all of this stuff into one line...
-        provider: function() {
-          return new HDWalletProvider(mnemonic, "http://127.0.0.1:8545/");
-        },
-          network_id: "*",       // Any network (default: none)
-          // gas: 9999999,
+     host: "127.0.0.1",     // Localhost (default: none)
+     port: 8545,            // Standard Ethereum port (default: none)
+      // Just to throw all of this stuff into one line...
+      // provider: function() {
+      //   return new HDWalletProvider(mnemonic, "http://127.0.0.1:8545/");
+      // },
+      network_id: "*",       // Any network (default: none)
+      networkCheckTimeout: 10000000
+      // gas: 9999999,
     },
     // Another network with more advanced options...
     // advanced: {

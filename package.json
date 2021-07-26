@@ -7,7 +7,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "truffle test ./test/main_test.js"
+    "test": "truffle test ./test/main_test.js ./test/mint_test.js",
+    "test_main": "truffle test ./test/main_test.js",
+    "test_mint": "truffle test ./test/mint_test.js"
   },
   "author": "",
   "license": "ISC",

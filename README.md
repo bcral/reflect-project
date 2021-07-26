@@ -12,4 +12,14 @@ truffle test
 
 (If all is well, truffle should run one test, and it should pass.  It just calls the name() function and compares the returned value with the expected value.)
 
-NOTICE - The "reflect-contracts" folder is the same as the repo I pulled it from, but I had to move REFLECT.sol to the "contracts" folder for truffle to recognize it.
+////////////////////////////////////////////////////////////////////////////////////
+Minting Test Notes:
+
+run test(after ganache is running) with:
+
+$ truffle test ./test/mint_test.js
+
+This line in SafeMoon contract seems to cause addition overflow reversion:
+
+"_rTotal = _rTotal.add(_rAmount);"
+(line 762 in REFLECT.sol)
