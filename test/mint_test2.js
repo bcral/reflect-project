@@ -71,45 +71,47 @@ contract('REFLECT.sol', async (accounts) => {
   });
 
   it(`4. Check balance of walletB.`, async function () {
-
     // Get balance of walletB address
     let BSupply = await config.reflect.balanceOf.call(walletB, {from: config.owner});
-    // walletB balance should be 1,000,000,000,000
+    // Owner balance should be 1,000,000,000,000
     assert.equal(BSupply, oneT, "walletB contains 1,000,000,000,000 coins.");
-
   });
   
   it(`5. Check balance of walletC.`, async function () {
-
     // Get balance of walletC address
     let CSupply = await config.reflect.balanceOf.call(walletC, {from: config.owner});
-    // walletC balance should be 1,000,000
+    // Owner balance should be 1,000,000
     assert.equal(CSupply, oneM, "walletC contains 1,000,000 coins.");
-    
   });
 
   /****************************************************************************************/
   /* Test Reflection AFTER Minting                                                        */
   /****************************************************************************************/
 
-  it(`6. Transfer 1,000,000 from walletB to walletD.`, async function () {
+  it(`6. Transfer 1,000,000,000,000 from walletB to walletD.`, async function () {
 
     // Get balance of walletC address BEFORE transfer - for use in next test
     CSupply = await config.reflect.balanceOf.call(walletC, {from: config.owner});
 
     // Set walletD address
     walletD = config.testAddresses[3];
+    // Get balance of walletD address BEFORE transfer
+    let originalDSupply = await config.reflect.balanceOf.call(walletD, {from: config.owner});
+
     // Send 1,000,000 from walletB to walletD
-    await config.reflect.transfer(walletD, oneM, {from: walletB});
-    // Get balance of walletB address
+    await config.reflect.transfer(walletD, oneT, {from: walletB});
+    // Get balance of walletD address
     let DSupply = await config.reflect.balanceOf.call(walletD, {from: config.owner});
     // Find out what value is expected(value transfered - tax)
-    let res = oneM - (oneM * tax);
+    let res = oneT - (oneT * tax);
     // Store distribution amount globaly
-    distAmnt = (oneM * tax) / 2;
-    console.log(res);
-    // walletD balance should be 1,000,000 - 5%
-    assert.equal(DSupply, res, "walletD contains 1,000,000 coins - tax.");
+    distAmnt = (oneT * tax) / 2;
+    // Log the value of walletD BEFORE transfer, to ensure it is 0
+    console.log(originalDSupply);
+    // walletD balance should be 1,000,000,000,000 - tax
+    // DSupply should equal "res", which is 950000000000
+    // Actual result, 950047455820, is not equal to 95% of the transfer
+    assert.equal(DSupply, res, "walletD contains 1,000,000,000,000 coins - tax.");
 
   });
 
@@ -118,7 +120,7 @@ contract('REFLECT.sol', async (accounts) => {
     // Find out what value is expected(value transfered in test 6 + dist / perecentage of total)
     totalSupply = await config.reflect.totalSupply.call({from: config.owner});
     let percSupply = CSupply.toNumber() / totalSupply.toNumber();
-    let reward = oneM * dist;
+    let reward = oneT * dist;
     let res = reward * percSupply;
     let addedReward = res + CSupply.toNumber();
     console.log(addedReward);
@@ -126,6 +128,14 @@ contract('REFLECT.sol', async (accounts) => {
     let currentCSupply = await config.reflect.balanceOf.call(walletC, {from: config.owner});
     // Use Math.floor() to simulate Solidity's rounding down of decimals
     assert.equal(currentCSupply, Math.floor(addedReward), "walletC contains 1,000,000 coins + distribution.");
+  });
+
+  it(`8. Just checking total supply.`, async function () {
+
+    // Find the total supply
+    totalSupply = await config.reflect.totalSupply.call({from: config.owner});
+    // Should be 1,001,000,001,000,000
+    assert.equal(totalSupply, 1001000001000000, "Total supply should be 1,001,000,001,000,000");
   });
 
 });
