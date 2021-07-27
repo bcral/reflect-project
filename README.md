@@ -17,6 +17,8 @@ Minting Test Notes:
 
 All of this was done with the assumption that the tax rate is 5%(as shown in the SafeMoon contract), and that distribution to other wallets is half of that(2.5%)
 
+`--> Why? The entire 5% is being redistributed. What, according to you, happens with the remaining 2.5%? I have turned off the auto-liquidity component of the code`
+
 run test(after ganache is running) with:
 
 $ truffle test ./test/mint_test.js
@@ -35,7 +37,17 @@ I decided to retry the same scenario as mint_test.js, but testing the distributi
 
 The strange behaviour comes in the transfer itself.  In test 6, 1,000,000,000,000(stored as variable "oneT" in test) coins are transferred to wallet, and so 950,000,000,000 are expected to be recieved.  The actual amount recieved is 950047455820.
 
+```
+--> Reasoning: It got 950,000,000,000 due to the transfer, and the 47455820 tokens are due to reflection.
+Since after this transaction, the 950,000,000,000 tokens are eligible for reflection as well.
+
+This is confirmed by the following math:
+
+950000000000 / 10**15 =~ 47455820 / 500000000
+```
+
 This would make sense if there were a transfer completed earlier in the test sequence, but there isn't.  I even logged the value of walletD BEFORE the transfer to ensure that it was 0.  Somehow the transfer isn't taking a whole 5% tax on the transaction.
 
 I suspect this behaviour is also causing the issue with test 7 receiving twice the expected distribution(again, going on the assumption that the amount distributed is 2.5% of the transaction).
 
+`Again, the amount distributed is 5%`
