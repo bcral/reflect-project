@@ -22,8 +22,6 @@ contract('REFLECT.sol', async (accounts) => {
   var oneM = 1000000;
   // tokenomics
   var tax = 0.05;
-  var dist = 0.025;
-  var distAmnt;
   // store for global use
   var CSupply;
 
@@ -85,7 +83,7 @@ contract('REFLECT.sol', async (accounts) => {
     let CSupply = await config.reflect.balanceOf.call(walletC, {from: config.owner});
     // walletC balance should be 1,000,000
     assert.equal(CSupply, oneM, "walletC contains 1,000,000 coins.");
-    
+
   });
 
   /****************************************************************************************/
@@ -106,7 +104,7 @@ contract('REFLECT.sol', async (accounts) => {
     // Find out what value is expected(value transfered - tax)
     let res = oneM - (oneM * tax);
     // Store distribution amount globaly
-    distAmnt = (oneM * tax) / 2;
+    distAmnt = (oneM * tax);
     console.log(res);
     // walletD balance should be 1,000,000 - 5%
     assert.equal(DSupply, res, "walletD contains 1,000,000 coins - tax.");
@@ -118,7 +116,7 @@ contract('REFLECT.sol', async (accounts) => {
     // Find out what value is expected(value transfered in test 6 + dist / perecentage of total)
     totalSupply = await config.reflect.totalSupply.call({from: config.owner});
     let percSupply = CSupply.toNumber() / totalSupply.toNumber();
-    let reward = oneM * dist;
+    let reward = oneM * tax;
     let res = reward * percSupply;
     let addedReward = res + CSupply.toNumber();
     console.log(addedReward);

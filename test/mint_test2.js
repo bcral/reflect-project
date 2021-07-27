@@ -22,10 +22,7 @@ contract('REFLECT.sol', async (accounts) => {
   var oneM = 1000000;
   // tokenomics
   var tax = 0.05;
-  var dist = 0.025;
-  var distAmnt;
-  // store for global use
-  var CSupply;
+  var distAmnt = 0;
 
   /****************************************************************************************/
   /* Operations and Settings                                                              */
@@ -35,107 +32,152 @@ contract('REFLECT.sol', async (accounts) => {
 
     // Get total token supply(in contract)
     originalSupply = await config.reflect.totalSupply.call({from: config.owner});
-    // Total supply should be 1 quadrillion, or 1,000,000,000,000,000
+
     assert.equal(originalSupply, 1000000000000000, "Fetches the total coin supply");
 
   });
 
-  it(`2. Mint 1,000,000,000,000 new coins to walletB.`, async function () {
+  it(`2. Transfer from owner to walletB`, async function () {
 
     // Set walletB address
     walletB = config.testAddresses[1];
-    // Call mint function of SafeMoon contract
-    await config.reflect.mint(walletB, oneT, {from: config.owner});
-    // Find new expected supply
-    let newSupply = originalSupply.toNumber() + oneT;
-    // Find actual current supply
-    totalSupply = await config.reflect.totalSupply.call({from: config.owner});
-    // total supply should be totalSupply + oneT
-    assert.equal(totalSupply, newSupply, "New amount after first mint to walletB");
+
+    // Transfer one trillion coins from owner to walletB 
+    await config.reflect.transfer(walletB, oneT, {from: config.owner});
+    // Get balance of walletB address
+    let BSupply = await config.reflect.balanceOf.call(walletB, {from: config.owner});
+    
+    assert.equal(BSupply, oneT, "WalletB should contain 1T coins - owner is exempt from taxes");
 
   });
 
-  it(`3. Mint 1,000,000 new coins to walletC.`, async function () {
+  it(`3. Transfer from owner to walletC`, async function () {
 
     // Set walletC address
     walletC = config.testAddresses[2];
-    // Call mint function of SafeMoon contract
-    await config.reflect.mint(walletC, oneM, {from: config.owner});
-    // Find new expected supply
-    let newSupply = totalSupply.toNumber() + oneM;
-    // Find actual current supply
-    totalSupply = await config.reflect.totalSupply.call({from: config.owner});
-    // total supply should be totalSupply + oneT
-    assert.equal(newSupply, newSupply, "New amount after first mint to walletC");
 
-  });
-
-  it(`4. Check balance of walletB.`, async function () {
-    // Get balance of walletB address
-    let BSupply = await config.reflect.balanceOf.call(walletB, {from: config.owner});
-    // Owner balance should be 1,000,000,000,000
-    assert.equal(BSupply, oneT, "walletB contains 1,000,000,000,000 coins.");
-  });
-  
-  it(`5. Check balance of walletC.`, async function () {
+    // Transfer one trillion coins from owner to walletC
+    await config.reflect.transfer(walletC, oneT, {from: config.owner});
     // Get balance of walletC address
     let CSupply = await config.reflect.balanceOf.call(walletC, {from: config.owner});
-    // Owner balance should be 1,000,000
-    assert.equal(CSupply, oneM, "walletC contains 1,000,000 coins.");
+
+    assert.equal(CSupply, oneT, "WalletC should contain 1T coins - owner is exempt from taxes");
   });
 
-  /****************************************************************************************/
-  /* Test Reflection AFTER Minting                                                        */
-  /****************************************************************************************/
+  it(`4. Transfer from owner to walletD`, async function () {
 
-  it(`6. Transfer 1,000,000,000,000 from walletB to walletD.`, async function () {
-
-    // Get balance of walletC address BEFORE transfer - for use in next test
-    CSupply = await config.reflect.balanceOf.call(walletC, {from: config.owner});
-
-    // Set walletD address
+    // Set walletC address
     walletD = config.testAddresses[3];
-    // Get balance of walletD address BEFORE transfer
-    let originalDSupply = await config.reflect.balanceOf.call(walletD, {from: config.owner});
 
-    // Send 1,000,000 from walletB to walletD
-    await config.reflect.transfer(walletD, oneT, {from: walletB});
+    // Transfer one trillion coins from owner to walletD
+    await config.reflect.transfer(walletD, oneT, {from: config.owner});
     // Get balance of walletD address
     let DSupply = await config.reflect.balanceOf.call(walletD, {from: config.owner});
-    // Find out what value is expected(value transfered - tax)
-    let res = oneT - (oneT * tax);
-    // Store distribution amount globaly
-    distAmnt = (oneT * tax) / 2;
-    // Log the value of walletD BEFORE transfer, to ensure it is 0
-    console.log(originalDSupply);
-    // walletD balance should be 1,000,000,000,000 - tax
-    // DSupply should equal "res", which is 950000000000
-    // Actual result, 950047455820, is not equal to 95% of the transfer
-    assert.equal(DSupply, res, "walletD contains 1,000,000,000,000 coins - tax.");
+
+    assert.equal(DSupply, oneT, "WalletD should contain 1T coins - owner is exempt from taxes");
+  });
+  
+  it(`5. Check balance of walletB.`, async function () {
+
+    // Get balance of walletB address
+    let BSupply = await config.reflect.balanceOf.call(walletB, {from: config.owner});
+
+    assert.equal(BSupply, oneT, "walletB should contain 1T coins + 0 reflection.  All transfers were from exempt owner");
 
   });
 
-  it(`7. Check distribution paid out to walletC.`, async function () {
+  /****************************************************************************************/
+  /* Test Reflection AFTER Transfers From Owner                                           */
+  /****************************************************************************************/
 
-    // Find out what value is expected(value transfered in test 6 + dist / perecentage of total)
-    totalSupply = await config.reflect.totalSupply.call({from: config.owner});
-    let percSupply = CSupply.toNumber() / totalSupply.toNumber();
-    let reward = oneT * dist;
-    let res = reward * percSupply;
-    let addedReward = res + CSupply.toNumber();
-    console.log(addedReward);
-    // Current balance of walletC should be 1,000,000 + distribution
-    let currentCSupply = await config.reflect.balanceOf.call(walletC, {from: config.owner});
-    // Use Math.floor() to simulate Solidity's rounding down of decimals
-    assert.equal(currentCSupply, Math.floor(addedReward), "walletC contains 1,000,000 coins + distribution.");
-  });
 
-  it(`8. Just checking total supply.`, async function () {
+  it(`6. Just checking total supply.`, async function () {
 
     // Find the total supply
     totalSupply = await config.reflect.totalSupply.call({from: config.owner});
-    // Should be 1,001,000,001,000,000
-    assert.equal(totalSupply, 1001000001000000, "Total supply should be 1,001,000,001,000,000");
+
+    assert.equal(totalSupply, 1000000000000000, "Total supply should be 1,000,000,000,000,000");
+  });
+
+  it(`7. Transfer 1t coins from walletB to walletC`, async function () {
+
+    // Get balance of walletD address BEFORE transfer
+    let beforeDSupply = await config.reflect.balanceOf.call(walletD, {from: config.owner});
+
+    // Transfer one trillion coins from walletB to walletC
+    // THIS TRANSFER DOES NOT DIRECTLY EFFECT THE BALANCE OF walletD
+    await config.reflect.transfer(walletC, oneT, {from: walletB});
+
+    // Logic for storing reflection
+    distAmnt = (oneT * tax);
+
+    // Calculate percentage of total supply held by wallet
+    let perc = beforeDSupply.toNumber() / totalSupply.toNumber();
+
+    let final = beforeDSupply.toNumber() + (distAmnt * perc);
+    console.log(beforeDSupply.toNumber());
+    console.log(distAmnt * perc);
+
+    // Get balance of walletD address
+    let DSupply = await config.reflect.balanceOf.call(walletD, {from: config.owner});
+
+    // Use Math.floor() to simulate Solidity's natural rounding down of decimals
+    assert.equal(DSupply, Math.floor(final), "WalletD should contain 1T coins + reflection from B to C transfer");
+  
+  });
+
+  it(`8. Transfer 1m coins from walletC to walletB`, async function () {
+
+    // Get balance of walletD address BEFORE transfer
+    let beforeDSupply = await config.reflect.balanceOf.call(walletD, {from: config.owner});
+
+    // Transfer one trillion coins from walletB to walletC
+    // THIS TRANSFER DOES NOT DIRECTLY EFFECT THE BALANCE OF walletD
+    await config.reflect.transfer(walletB, oneM, {from: walletC});
+
+    // Logic for storing reflection
+    distAmnt = (oneM * tax);
+
+    // Calculate percentage of total supply held by wallet
+    let perc = beforeDSupply.toNumber() / totalSupply.toNumber();
+
+    let final = beforeDSupply.toNumber() + (distAmnt * perc);
+    console.log(beforeDSupply.toNumber());
+    console.log(distAmnt * perc);
+
+    // Get balance of walletD address AFTER transfer
+    let DSupply = await config.reflect.balanceOf.call(walletD, {from: config.owner});
+
+    // Use Math.floor() to simulate Solidity's natural rounding down of decimals
+    assert.equal(DSupply, Math.floor(final), "WalletD should contain 1T coins + reflection from B to C transfer");
+  
+  });
+
+  it(`9. Transfer 1m coins from walletC to walletB - same as previous`, async function () {
+
+    // Get balance of walletD address BEFORE transfer
+    let beforeDSupply = await config.reflect.balanceOf.call(walletD, {from: config.owner});
+
+    // Transfer one trillion coins from walletB to walletC
+    // THIS TRANSFER DOES NOT DIRECTLY EFFECT THE BALANCE OF walletD
+    await config.reflect.transfer(walletB, oneM, {from: walletC});
+
+    // Logic for storing reflection
+    distAmnt = (oneM * tax);
+
+    // Calculate percentage of total supply held by wallet
+    let perc = beforeDSupply.toNumber() / totalSupply.toNumber();
+
+    let final = beforeDSupply.toNumber() + (distAmnt * perc);
+    console.log(beforeDSupply.toNumber());
+    console.log(distAmnt * perc);
+
+    // Get balance of walletD address AFTER transfer
+    let DSupply = await config.reflect.balanceOf.call(walletD, {from: config.owner});
+
+    // Use Math.floor() to simulate Solidity's natural rounding down of decimals
+    assert.equal(DSupply, Math.floor(final), "WalletD should contain 1T coins + reflection from B to C transfer");
+  
   });
 
 });
