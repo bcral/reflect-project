@@ -108,18 +108,20 @@ contract('REFLECT.sol', async (accounts) => {
     // THIS TRANSFER DOES NOT DIRECTLY EFFECT THE BALANCE OF walletD
     await config.reflect.transfer(walletC, oneT, {from: walletB});
 
-    // Logic for storing reflection
+    // Logic for storing reflection value
     distAmnt = (oneT * tax);
 
     // Calculate percentage of total supply held by wallet
     let perc = beforeDSupply.toNumber() / totalSupply.toNumber();
 
     let final = beforeDSupply.toNumber() + (distAmnt * perc);
-    console.log(beforeDSupply.toNumber());
-    console.log(distAmnt * perc);
+    console.log('balance before: ', beforeDSupply.toNumber());
+    console.log('amount added: ', distAmnt * perc);
 
     // Get balance of walletD address
     let DSupply = await config.reflect.balanceOf.call(walletD, {from: config.owner});
+
+    console.log('balance after: ', DSupply.toNumber());
 
     // Use Math.floor() to simulate Solidity's natural rounding down of decimals
     assert.equal(DSupply, Math.floor(final), "WalletD should contain 1T coins + reflection from B to C transfer");
@@ -148,6 +150,8 @@ contract('REFLECT.sol', async (accounts) => {
     // Get balance of walletD address AFTER transfer
     let DSupply = await config.reflect.balanceOf.call(walletD, {from: config.owner});
 
+    console.log('balance after: ', DSupply.toNumber());
+
     // Use Math.floor() to simulate Solidity's natural rounding down of decimals
     assert.equal(DSupply, Math.floor(final), "WalletD should contain 1T coins + reflection from B to C transfer");
   
@@ -174,6 +178,8 @@ contract('REFLECT.sol', async (accounts) => {
 
     // Get balance of walletD address AFTER transfer
     let DSupply = await config.reflect.balanceOf.call(walletD, {from: config.owner});
+
+    console.log('balance after: ', DSupply.toNumber());    
 
     // Use Math.floor() to simulate Solidity's natural rounding down of decimals
     assert.equal(DSupply, Math.floor(final), "WalletD should contain 1T coins + reflection from B to C transfer");
