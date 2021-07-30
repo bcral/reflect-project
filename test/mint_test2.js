@@ -186,4 +186,28 @@ contract('REFLECT.sol', async (accounts) => {
   
   });
 
+  it(`10. Check sum of all wallets vs. total supply.`, async function () {
+
+    // Get balance of owner address
+    let ownerSupply = await config.reflect.balanceOf.call(config.owner, {from: config.owner});
+    // Get balance of walletB address
+    let BSupply = await config.reflect.balanceOf.call(walletB, {from: config.owner});
+    // Get balance of walletC address
+    let CSupply = await config.reflect.balanceOf.call(walletC, {from: config.owner});
+    // Get balance of walletD address
+    let DSupply = await config.reflect.balanceOf.call(walletD, {from: config.owner});
+
+    // Get total token supply(in contract)
+    totalSupply = await config.reflect.totalSupply.call({from: config.owner});
+
+    let allWalletSupply = ownerSupply.toNumber() + BSupply.toNumber() + CSupply.toNumber() + DSupply.toNumber();
+
+    console.log('Sum of all wallets: ', allWalletSupply);    
+    console.log('Total supply: ', totalSupply.toNumber());  
+
+    // Use Math.floor() to simulate Solidity's natural rounding down of decimals
+    assert.equal(totalSupply, Math.floor(allWalletSupply), "Sum of all wallets should equal total supply.");
+  
+  });
+
 });
