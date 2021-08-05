@@ -20,6 +20,9 @@ contract('REFLECT.sol', async (accounts) => {
   // values for holding larger numbers, to prevent typos
   var oneT = 1000000000000;
   var oneM = 1000000;
+  var hugeNumber = Math.pow(10, 20); // 10**20
+  var insanelyHugeNumber = new BigNumber('10000000000000000000000'); // 10**22
+  var biggerInsanelyHugeNumber = insanelyHugeNumber * 100;
   // tokenomics
   var tax = 0.05;
   // store for global use
@@ -33,19 +36,19 @@ contract('REFLECT.sol', async (accounts) => {
 
     // Get total token supply(in contract)
     originalSupply = await config.reflect.totalSupply.call({from: config.owner});
-    // Total supply should be 1 quadrillion, or 1,000,000,000,000,000
-    assert.equal(originalSupply, 1000000000000000, "Fetches the total coin supply");
+    // Total supply should be a lot, or 10**20
+    assert.equal(originalSupply, hugeNumber, "Fetches the total coin supply");
 
   });
 
-  it(`2. Mint 1,000,000,000,000 new coins to walletB.`, async function () {
+  it(`2. Mint new coins to walletB.`, async function () {
 
     // Set walletB address
     walletB = config.testAddresses[1];
     // Call mint function of SafeMoon contract
-    await config.reflect.mint(walletB, oneT, {from: config.owner});
+    await config.reflect.mint(walletB, insanelyHugeNumber, {from: config.owner});
     // Find new expected supply
-    let newSupply = originalSupply.toNumber() + oneT;
+    let newSupply = originalSupply.toNumber() + insanelyHugeNumber;
     // Find actual current supply
     totalSupply = await config.reflect.totalSupply.call({from: config.owner});
     // total supply should be totalSupply + oneT

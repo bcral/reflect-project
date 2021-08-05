@@ -117,13 +117,15 @@ contract('REFLECT.sol', async (accounts) => {
     var senderArray = [walletC, walletD, walletE, walletF, walletB]
 
 //                  V - number of loops through the loop 
-    for(i = 0; i < 30; i++) {
+    for(i = 0; i < 2; i++) {
         for(j = 0; j < walletArray.length; j++) {
             let addyRecip = walletArray[j];
             let addySender = senderArray[j];
             // Transfer one million coins from owner to walletB - E
             //                                         V - Transaction value
-            await config.reflect.transfer(addyRecip, 1000, {from: addySender});
+            await config.reflect.transfer(addyRecip, 5000, {from: addySender});
+            console.log(await config.reflect.balanceOf.call(addySender, {from: config.owner}).toNumber());
+            console.log(await config.reflect.balanceOf.call(addyRecip, {from: config.owner}).toNumber());
         }
     }
 
