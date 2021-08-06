@@ -741,7 +741,7 @@ contract SafeMoon is Context, IERC20, Ownable {
         _rOwned[_msgSender()] = _rTotal;
 
         _tTotal = 100000 * 10**9 * 10**6;
-        _rTotal = 11579208923731619542357098500868790785326998466564056403945758 * 10**6 * 10**9;
+        _rTotal = 1000000 * 10**9 * 10**9; // 11579208923731619542357098500868790785326998466564056403945758 * 10**6 * 10**9;
         
         // IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0x52530AeEcd4574b880924b3FAFa16c0B6b081329);
          // Create a uniswap pair for this new token
